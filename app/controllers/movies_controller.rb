@@ -7,25 +7,32 @@ class MoviesController < ApplicationController
     end
 
     def index
-        sort_order = params[:order].nil? ? "id" : params[:order]
-        ratings = params[:ratings].nil? ? {} : params[:ratings]
-        puts ratings
+        if params[:order].nil? then
+            params[:order] = session[:order].nil? ? "id" : session[:order]
+        else
+            session[:order] = params[:order]
+        end
 
-        if ratings.empty? then
+        if params[:ratings].nil? then
+            params[:ratings] = session[:ratings].nil? ? {} : session[:ratings]
+        else
+            session[:ratings] = params[:ratings]
+        end
+
+        if params[:ratings].nil? then
             @movies = Movie.find(
                 :all,
-                :order => "#{sort_order} ASC"
+                :order => "#{params[:order]} ASC"
             )
         else
             @movies = Movie.find(
                 :all,
-                :conditions => { :rating => ratings.keys },
-                :order => "#{sort_order} ASC"
+                :conditions => { :rating => params[:ratings].keys },
+                :order => "#{params[:order]} ASC"
             )
         end
 
         @all_ratings = Movie.ratings
-        session[:ratings] = ratings
     end
 
     def new
