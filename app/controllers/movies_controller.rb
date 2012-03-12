@@ -7,14 +7,19 @@ class MoviesController < ApplicationController
     end
 
     def index
+
+        redirect = false
+
         if params[:order].nil? then
             params[:order] = session[:order].nil? ? "id" : session[:order]
+            redirect = true
         else
             session[:order] = params[:order]
         end
 
         if params[:ratings].nil? then
             params[:ratings] = session[:ratings].nil? ? {} : session[:ratings]
+            redirect = true
         else
             session[:ratings] = params[:ratings]
         end
@@ -33,6 +38,10 @@ class MoviesController < ApplicationController
         end
 
         @all_ratings = Movie.ratings
+
+        if redirect
+            redirect_to movies_path(params)
+        end
     end
 
     def new
